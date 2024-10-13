@@ -7,6 +7,7 @@ import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
 import React from "react";
 import { ExpandableCell, ServerDataGrid } from "../../components/data/ServerDataGrid";
+import { Dataset } from "../../types/datasets";
 import { ModalContainer } from "../../components/layout/ModalContainer";
 import { formatDateTime, formatUUIDShort } from "../../utils/formatting";
 
@@ -57,7 +58,7 @@ const INITIAL_SORTING: GridSortModel = [
 export const DatasetsGrid = (props: {}) => {
   return (
     <Box sx={{ width: '100%', height: 600 }}>
-      <ServerDataGrid
+      <ServerDataGrid<Dataset>
         endpoint="/datasets/"
         columns={COLUMNS}
         initialState={INITIAL_STATE}

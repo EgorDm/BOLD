@@ -18,7 +18,6 @@ import React, { useEffect, useMemo } from "react";
 import { useMutation } from "react-query";
 import { useApi } from "../../hooks/useApi";
 import useNotification from "../../hooks/useNotification";
-import { Report } from "../../types/reports";
 import { extractErrorMessage } from "../../utils/errors";
 import { useFetchList } from "../../utils/pagination";
 import Link from '@mui/material/Link';
@@ -48,7 +47,7 @@ export const ExpandableCell = ({ value, maxLength = 200 }: GridRenderCellParams 
 };
 
 
-export const ServerDataGrid = (props: {
+export const ServerDataGrid = <T, > (props: {
   endpoint: string,
   columns: GridColDef[],
   initialState: GridInitialStateCommunity,
@@ -93,7 +92,7 @@ export const ServerDataGrid = (props: {
     limit, setLimit,
     setQuery,
     setOrdering,
-  } = useFetchList<Report>(endpoint, {}, {});
+  } = useFetchList<T>(endpoint, {}, {});
 
 
   const apiClient = useApi();

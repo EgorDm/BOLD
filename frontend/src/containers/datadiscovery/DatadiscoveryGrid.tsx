@@ -4,6 +4,7 @@ import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
 import React from "react";
 import { ServerDataGrid } from "../../components/data/ServerDataGrid";
+import { Discovery } from "../../types/discoveries";
 import { formatUUIDShort } from "../../utils/formatting";
 
 const COLUMNS: GridColDef[] = [
@@ -38,7 +39,7 @@ const INITIAL_SORTING: GridSortModel = [
 export const DatadiscoveryGrid = (props: {}) => {
   return (
     <Box sx={{ width: '100%', height: 600 }}>
-      <ServerDataGrid
+      <ServerDataGrid<Discovery>
         endpoint="/datadiscovery/"
         columns={COLUMNS}
         initialState={INITIAL_STATE}

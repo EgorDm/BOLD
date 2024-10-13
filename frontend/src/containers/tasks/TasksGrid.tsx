@@ -6,6 +6,7 @@ import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
 import React from "react";
 import { ServerDataGrid } from "../../components/data/ServerDataGrid";
+import { Task } from "../../types/tasks";
 import { formatDateTime, formatUUIDShort } from "../../utils/formatting";
 
 
@@ -54,7 +55,7 @@ const INITIAL_SORTING: GridSortModel = [
 export const TasksGrid = (props: {}) => {
   return (
     <Box sx={{ width: '100%', height: 600 }}>
-      <ServerDataGrid
+      <ServerDataGrid<Task>
         endpoint="/tasks/"
         columns={COLUMNS}
         initialState={INITIAL_STATE}
