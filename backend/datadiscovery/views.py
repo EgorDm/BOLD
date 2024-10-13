@@ -6,9 +6,12 @@ from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from datasets.models import Dataset
 from datadiscovery.serializers import SearchSerializer
+from reports.tasks import run_sparql
+
 
 class DatadiscoveryViewSet(viewsets.ModelViewSet):
     """

@@ -12,13 +12,9 @@ const COLUMNS: GridColDef[] = [
     field: 'id', headerName: 'Dataset ID', flex: 0.5,
     valueFormatter: (params) => formatUUIDShort(params.value)
   },
-  { field: 'name', headerName: 'Dataset Name', flex: 1 },
-  {
-    field: 'triples', headerName: 'Triples matched with search', flex: 0.5, type: 'number',
-    valueGetter: (params) => {
-      let total_triple_count = params.row.statistics?.triple_count
-      return `${total_triple_count}/${total_triple_count}`
-    },
+  { field: 'name', headerName: 'Dataset Name', flex: 0.5 },
+  { field: 'terms', headerName: 'Terms', flex: 2.0,
+    valueGetter: (params) => params.value.map(t => t['term']).join('. ')
   },
 ]
 
@@ -32,7 +28,7 @@ const INITIAL_STATE: GridInitialStateCommunity = {
 }
 
 const INITIAL_SORTING: GridSortModel = [
-  { field: 'id', sort: 'desc' }
+  { field: 'dataset_id', sort: 'desc' }
 ]
 
 
