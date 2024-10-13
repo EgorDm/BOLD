@@ -21,3 +21,4 @@ class DatadiscoveryViewSet(viewsets.ModelViewSet):
     serializer_class = SearchSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'id'] # of the dataset
