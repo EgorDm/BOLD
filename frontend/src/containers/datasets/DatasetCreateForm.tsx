@@ -61,6 +61,20 @@ export const DatasetCreateForm = (props: {
             values.source = "https://www.wikidata.org/wiki/Special:EntityData?id=" + prefix + values.source + "&format=rdf";
           }
         }
+        if (modeUrl === 'dbpedia') {
+          let prefix = '';
+          if (modeUrlItem === 'entity') {
+            prefix = 'data/';
+          } else if (modeUrlItem === 'class') {
+            prefix = 'data3/';
+          } else {
+            sendNotification({ variant: "error", message: "Select the type of DBPedia item to query" });
+            return;
+          }
+          if (!values.source.startsWith('http')) {
+            values.source = "https://dbpedia.org/" + prefix + values.source + ".rdf";
+          }
+        }
       }
 
       setLoading(true);
@@ -171,6 +185,7 @@ export const DatasetCreateForm = (props: {
                       <TabList onChange={(e, v) => setModeUrl(v)} centered>
                         <Tab label="Custom URL" value="raw"/>
                         <Tab label="WikiData" value="wikidata"/>
+                        <Tab label="DBPedia" value="dbpedia"/>
                       </TabList>
                     </Box>
                     <TabPanel value="raw">
@@ -202,6 +217,31 @@ export const DatasetCreateForm = (props: {
                       <TextField
                         label={modeUrlItem}
                         placeholder="write the identifier number here"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                    <TabPanel value="dbpedia">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="1em">
+                        Select the type of item to import:
+                        <Select
+                          defaultValue=""
+                          placeholder="Select an option"
+                          value={modeUrlItem}
+                          onChange={(event, newValue: ReactElement) => setModeUrlItem(newValue.props.value)}>
+                          {[['entity', 'entity (owl:Thing)'], ['class', 'class (owl:Class)']].map((option, index) => (
+                            <MenuItem key={index} value={option[0]}>
+                              {option[1]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                      <TextField
+                        label={modeUrlItem}
+                        placeholder="write the identifier name here"
                         variant="outlined"
                         multiline
                         rows={3}
