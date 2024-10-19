@@ -22,6 +22,7 @@ export const DatasetCreateForm = (props: {
   onClose: (created: boolean) => void;
 }) => {
   const [ mode, setMode ] = useState('existing');
+  const [ modeUrl, setModeUrl ] = useState('raw');
   const [ loading, setLoading ] = useState(false);
   const { sendNotification } = useNotification();
   const {
@@ -148,15 +149,24 @@ export const DatasetCreateForm = (props: {
             <TabPanel value="urls">
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <TextField
-                    label="URL(s) to dataset"
-                    placeholder="Urls separated by newline"
-                    variant="outlined"
-                    multiline
-                    rows={3}
-                    fullWidth
-                    {...fieldProps(formik, 'source')}
-                  />
+                  <TabContext value={modeUrl}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      <TabList onChange={(e, v) => setModeUrl(v)} centered>
+                        <Tab label="Custom URL" value="raw"/>
+                      </TabList>
+                    </Box>
+                    <TabPanel value="raw">
+                      <TextField
+                        label="URL(s) to dataset"
+                        placeholder="Urls separated by newline"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                  </TabContext>
                 </Grid>
               </Grid>
             </TabPanel>
