@@ -9,7 +9,7 @@ import {
   TextField
 } from "@mui/material"
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import { FormContainer } from "../../components/layout/FormContainer";
 import { useApi } from "../../hooks/useApi";
 import useNotification from "../../hooks/useNotification";
@@ -23,6 +23,7 @@ export const DatasetCreateForm = (props: {
 }) => {
   const [ mode, setMode ] = useState('existing');
   const [ modeUrl, setModeUrl ] = useState('raw');
+  const [ modeUrlItem, setModeUrlItem ] = useState('');
   const [ loading, setLoading ] = useState(false);
   const { sendNotification } = useNotification();
   const {
@@ -45,8 +46,24 @@ export const DatasetCreateForm = (props: {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
+      if (mode === 'urls') {
+        if (modeUrl === 'wikidata') {
+          let prefix = '';
+          if (modeUrlItem === 'entity') {
+            prefix = 'Q';
+          } else if (modeUrlItem === 'property') {
+            prefix = 'P';
+          } else {
+            sendNotification({ variant: "error", message: "Select the type of WikiData item to query" });
+            return;
+          }
+          if (!values.source.startsWith('http')) {
+            values.source = "https://www.wikidata.org/wiki/Special:EntityData?id=" + prefix + values.source + "&format=rdf";
+          }
+        }
+      }
 
+      setLoading(true);
       try {
         let result;
         if (mode === 'upload') {
@@ -153,12 +170,38 @@ export const DatasetCreateForm = (props: {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                       <TabList onChange={(e, v) => setModeUrl(v)} centered>
                         <Tab label="Custom URL" value="raw"/>
+                        <Tab label="WikiData" value="wikidata"/>
                       </TabList>
                     </Box>
                     <TabPanel value="raw">
                       <TextField
                         label="URL(s) to dataset"
                         placeholder="Urls separated by newline"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                    <TabPanel value="wikidata">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="1em">
+                        Select the type of item to import:
+                        <Select
+                          defaultValue=""
+                          placeholder="Select an option"
+                          value={modeUrlItem}
+                          onChange={(event, newValue: ReactElement) => setModeUrlItem(newValue.props.value)}>
+                          {[['entity', 'entity (Qid)'], ['property', 'property (Pid)']].map((option, index) => (
+                            <MenuItem key={index} value={option[0]}>
+                              {option[1]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                      <TextField
+                        label={modeUrlItem}
+                        placeholder="write the identifier number here"
                         variant="outlined"
                         multiline
                         rows={3}
