@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
 import React from "react";
@@ -14,7 +14,22 @@ const COLUMNS: GridColDef[] = [
   },
   { field: 'name', headerName: 'Dataset Name', flex: 0.5 },
   { field: 'terms', headerName: 'Terms', flex: 2.0,
-    valueGetter: (params) => params.value.map(t => t['term']).join('. ')
+    valueGetter: (params) => params.value.map(t => t['term']).join('. '),
+    renderCell: (params: GridRenderCellParams<any, any>) => {
+      let triples = params.value.split(". ").filter(i => i !== "");
+      let items = triples.map((v, i) => {
+        let terms = v.split(" ")
+          .map(v => v.startsWith("http") ? <a href={v}>{v} </a> : v);
+
+        return (<li key={i}>{terms}</li>);
+      });
+
+      return (
+        <details>
+          <summary>Number of matching triples is {triples.length}</summary>
+            <ul style={{ paddingInlineStart: '1rem' }} >{items}</ul>
+        </details>
+    );},
   },
 ]
 
