@@ -57,8 +57,12 @@ export const DatasetCreateForm = (props: {
             sendNotification({ variant: "error", message: "Select the type of WikiData item to query" });
             return;
           }
-          if (!values.source.startsWith('http')) {
+          if (/^\d+$/.test(values.source)) {
             values.source = "https://www.wikidata.org/wiki/Special:EntityData?id=" + prefix + values.source + "&format=rdf";
+          }
+          else if (!values.source.startsWith('http')) {
+            sendNotification({ variant: "error", message: "Enter only the identifier number or full url" });
+            return;
           }
         }
         if (modeUrl === 'dbpedia') {
