@@ -9,7 +9,7 @@ import {
   TextField
 } from "@mui/material"
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import { FormContainer } from "../../components/layout/FormContainer";
 import { useApi } from "../../hooks/useApi";
 import useNotification from "../../hooks/useNotification";
@@ -22,6 +22,8 @@ export const DatasetCreateForm = (props: {
   onClose: (created: boolean) => void;
 }) => {
   const [ mode, setMode ] = useState('existing');
+  const [ modeUrl, setModeUrl ] = useState('raw');
+  const [ modeUrlItem, setModeUrlItem ] = useState('');
   const [ loading, setLoading ] = useState(false);
   const { sendNotification } = useNotification();
   const {
@@ -44,8 +46,51 @@ export const DatasetCreateForm = (props: {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
+      if (mode === 'urls') {
+        if (modeUrl === 'wikidata') {
+          let prefix = '';
+          if (modeUrlItem === 'entity') {
+            prefix = 'Q';
+          } else if (modeUrlItem === 'property') {
+            prefix = 'P';
+          } else {
+            sendNotification({ variant: "error", message: "Select the type of WikiData item to query" });
+            return;
+          }
+          if (/^\d+$/.test(values.source)) {
+            values.source = "https://www.wikidata.org/wiki/Special:EntityData?id=" + prefix + values.source + "&format=rdf";
+          }
+          else if (!values.source.startsWith('http')) {
+            sendNotification({ variant: "error", message: "Enter only the identifier number or full url" });
+            return;
+          }
+        }
+        if (modeUrl === 'dbpedia') {
+          let prefix = '';
+          if (modeUrlItem === 'entity') {
+            prefix = 'data/';
+          } else if (modeUrlItem === 'class') {
+            prefix = 'data3/';
+          } else {
+            sendNotification({ variant: "error", message: "Select the type of DBPedia item to query" });
+            return;
+          }
+          if (values.source !== '' && !values.source.startsWith('http')) {
+            values.source = "https://dbpedia.org/" + prefix + values.source + ".rdf";
+          }
+          else if (!values.source.startsWith('http')) {
+            sendNotification({ variant: "error", message: "Enter the name of the item to query or full url" });
+            return;
+          }
+        }
+      }
 
+      if (values.name === '') {
+        sendNotification({ variant: "error", message: "Enter a name for the database" });
+        return;
+      }
+
+      setLoading(true);
       try {
         let result;
         if (mode === 'upload') {
@@ -148,15 +193,76 @@ export const DatasetCreateForm = (props: {
             <TabPanel value="urls">
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <TextField
-                    label="URL(s) to dataset"
-                    placeholder="Urls separated by newline"
-                    variant="outlined"
-                    multiline
-                    rows={3}
-                    fullWidth
-                    {...fieldProps(formik, 'source')}
-                  />
+                  <TabContext value={modeUrl}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      <TabList onChange={(e, v) => setModeUrl(v)} centered>
+                        <Tab label="Custom URL" value="raw"/>
+                        <Tab label="WikiData" value="wikidata"/>
+                        <Tab label="DBPedia" value="dbpedia"/>
+                      </TabList>
+                    </Box>
+                    <TabPanel value="raw">
+                      <TextField
+                        label="URL(s) to dataset"
+                        placeholder="Urls separated by newline"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                    <TabPanel value="wikidata">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="1em">
+                        Select the type of item to import:
+                        <Select
+                          defaultValue=""
+                          placeholder="Select an option"
+                          value={modeUrlItem}
+                          onChange={(event, newValue: ReactElement) => setModeUrlItem(newValue.props.value)}>
+                          {[['entity', 'entity (Qid)'], ['property', 'property (Pid)']].map((option, index) => (
+                            <MenuItem key={index} value={option[0]}>
+                              {option[1]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                      <TextField
+                        label={modeUrlItem}
+                        placeholder="write the identifier number here"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                    <TabPanel value="dbpedia">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="1em">
+                        Select the type of item to import:
+                        <Select
+                          defaultValue=""
+                          placeholder="Select an option"
+                          value={modeUrlItem}
+                          onChange={(event, newValue: ReactElement) => setModeUrlItem(newValue.props.value)}>
+                          {[['entity', 'entity (owl:Thing)'], ['class', 'class (owl:Class)']].map((option, index) => (
+                            <MenuItem key={index} value={option[0]}>
+                              {option[1]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                      <TextField
+                        label={modeUrlItem}
+                        placeholder="write the identifier name here"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        {...fieldProps(formik, 'source')}
+                      />
+                    </TabPanel>
+                  </TabContext>
                 </Grid>
               </Grid>
             </TabPanel>
