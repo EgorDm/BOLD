@@ -97,7 +97,7 @@ export const TriplyDBGrid = (props: {}) => {
         columns={columns}
         getRowHeight={() => 'auto'}
         getEstimatedRowHeight={() => 100}
-        filterMode="server"
+        filterMode="client"
         onFilterModelChange={setFilterModel}
         initialState={{
           columns: {
