@@ -75,8 +75,12 @@ export const DatasetCreateForm = (props: {
             sendNotification({ variant: "error", message: "Select the type of DBPedia item to query" });
             return;
           }
-          if (!values.source.startsWith('http')) {
+          if (values.source !== '' && !values.source.startsWith('http')) {
             values.source = "https://dbpedia.org/" + prefix + values.source + ".rdf";
+          }
+          else if (!values.source.startsWith('http')) {
+            sendNotification({ variant: "error", message: "Enter the name of the item to query or full url" });
+            return;
           }
         }
       }
