@@ -81,6 +81,11 @@ export const DatasetCreateForm = (props: {
         }
       }
 
+      if (values.name === '') {
+        sendNotification({ variant: "error", message: "Enter a name for the database" });
+        return;
+      }
+
       setLoading(true);
       try {
         let result;
