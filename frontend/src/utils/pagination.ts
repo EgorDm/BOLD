@@ -19,6 +19,12 @@ export interface PaginationParams {
   ordering: string;
 }
 
+export interface FieldFilter {
+  filterField: string;
+  filterOperator: string;
+  filterValue: string;
+}
+
 export const apiFetchList = <T, >(
   apiClient: Axios,
   endpoint: string,
@@ -36,6 +42,13 @@ export const apiFetchList = <T, >(
       params['search'] = query;
     }
 
+    if (filters["fieldFilter"]) {
+      const {filterField, filterOperator, filterValue} = filters["fieldFilter"];
+      params['filterField'] = filterField;
+      params['filterOperator'] = filterOperator;
+      params['filterValue'] = filterValue;
+    }
+
     const response = await apiClient.get<PaginatedResult<T>>(endpoint, { params })
     updateCountFn(response.data.count);
 
@@ -47,13 +60,14 @@ export const useFetchList = <T, >(
   endpoint: string,
   pagination: Partial<PaginationParams>,
   options: UseQueryOptions<T[]>,
-  filters = undefined
+  baseFilters = undefined
 ) => {
   const [ count, setCount ] = useState(1);
   const [ page, setPage ] = useState(pagination.page ?? 0);
   const [ limit, setLimit ] = useState(pagination.limit ?? 20);
   const [ query, setQuery ] = useState(pagination.query ?? "");
   const [ ordering, setOrdering ] = useState(pagination.ordering ?? "-updated_at");
+  const [ filters, setFilters ] = useState(baseFilters ?? "");
 
   const apiClient = useApi();
 
@@ -76,6 +90,7 @@ export const useFetchList = <T, >(
     page, setPage,
     limit, setLimit,
     query, setQuery,
+    filters, setFilters,
     ordering, setOrdering,
     refresh,
   }

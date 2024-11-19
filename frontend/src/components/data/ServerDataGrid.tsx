@@ -19,7 +19,7 @@ import { useMutation } from "react-query";
 import { useApi } from "../../hooks/useApi";
 import useNotification from "../../hooks/useNotification";
 import { extractErrorMessage } from "../../utils/errors";
-import { useFetchList } from "../../utils/pagination";
+import { useFetchList, FieldFilter } from "../../utils/pagination";
 import Link from '@mui/material/Link';
 import { FormContainer } from "../layout/FormContainer";
 import { ModalContainer } from "../layout/ModalContainer";
@@ -91,6 +91,7 @@ export const ServerDataGrid = <T, > (props: {
     page, setPage,
     limit, setLimit,
     setQuery,
+    setFilters,
     setOrdering,
   } = useFetchList<T>(endpoint, {}, {});
 
@@ -121,7 +122,25 @@ export const ServerDataGrid = <T, > (props: {
   }, [ sortModel, initialSorting ]);
 
   useEffect(() => {
-    setQuery(filterModel?.quickFilterValues?.join(' ') ?? '');
+    // the search bar was used
+    if (filterModel?.quickFilterValues) {
+      // so set the search parameter
+      setQuery(filterModel.quickFilterValues.join(' '));
+    }
+
+    // the filter options on the table were used
+    if (filterModel?.items) {
+      // so set the filter parameters
+      const field_filter = filterModel?.items;
+      if (field_filter && field_filter.length > 0) {
+        // only a single field filter can be set
+        const filterField = field_filter[0].columnField;
+        const filterOperator = field_filter[0].operatorValue;
+        const filterValue = field_filter[0].value;
+        const filter : FieldFilter = {filterField, filterOperator, filterValue};
+        setFilters(filter);
+      }
+    }
   }, [ filterModel ]);
 
   return (
@@ -139,7 +158,7 @@ export const ServerDataGrid = <T, > (props: {
         onPageSizeChange={setLimit}
         columns={columnsProcessed}
         rowsPerPageOptions={[ 20, 50, 100 ]}
-        filterMode="client"
+        filterMode="server"
         onFilterModelChange={setFilterModel}
         sortingMode="server"
         onSortModelChange={setSortModel}
