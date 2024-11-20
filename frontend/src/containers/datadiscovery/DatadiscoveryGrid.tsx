@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams, getGridStringOperators } from "@mui/x-data-grid";
 import { GridFilterModel } from "@mui/x-data-grid/models/gridFilterModel";
 import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
@@ -20,6 +20,9 @@ const COLUMNS: GridColDef[] = [
   { field: 'terms', headerName: 'Terms', flex: 2.0,
     valueGetter: (params) => params.value.map(t => t['term']).join('. '),
     sortable: false,
+    filterOperators: getGridStringOperators().filter(
+      op => ['contains'].includes(op.value)
+    ),
     renderCell: (params: GridRenderCellParams<any, any>) => {
       let triples = params.value.split(". ").filter(i => i !== "");
       let items = triples.map((v, i) => {
