@@ -14,10 +14,10 @@ const COLUMNS: GridColDef[] = [
     valueFormatter: (params) => formatUUIDShort(params.value),
     filterable: false,
   },
-  { field: 'name', headerName: 'Dataset Name', flex: 0.5,
+  { field: 'name', headerName: 'Dataset Name', flex: 1,
     filterable: false,
   },
-  { field: 'terms', headerName: 'Terms', flex: 2.0,
+  { field: 'terms', headerName: 'Terms', flex: 3.75,
     valueGetter: (params) => params.value.map(t => t['term']).join('. '),
     sortable: false,
     filterOperators: getGridStringOperators().filter(
@@ -58,7 +58,7 @@ const INITIAL_STATE: GridInitialStateCommunity = {
 }
 
 const INITIAL_SORTING: GridSortModel = [
-  { field: 'terms', sort: 'desc' }
+  { field: 'created_at', sort: 'desc' }
 ]
 
 
