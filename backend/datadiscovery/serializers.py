@@ -41,6 +41,11 @@ class SearchSerializer(serializers.ModelSerializer):
             # filtering is only allowed on terms
             return []
 
+        if (dataset.state != "IMPORTED"):
+            # skip datasets which have not been imported yet
+            # allows data discovery while importing large datasets
+            return []
+
         outputs, error = run_sparql(dataset, query, 20, 20)
 
         if error:
