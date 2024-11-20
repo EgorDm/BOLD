@@ -20,5 +20,13 @@ class DatadiscoveryViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = SearchSerializer
     pagination_class = LimitOffsetPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'id'] # of the dataset
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['filter_field'] = self.request.query_params.get('filterField')
+        context['filter_operator'] = self.request.query_params.get('filterOperator')
+        context['filter_value'] = self.request.query_params.get('filterValue')
+        context['filter_search'] = self.request.query_params.get('search')
+
+        return context

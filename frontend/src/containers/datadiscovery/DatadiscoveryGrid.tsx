@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridFilterModel } from "@mui/x-data-grid/models/gridFilterModel";
 import { GridSortModel } from "@mui/x-data-grid/models/gridSortModel";
 import { GridInitialStateCommunity } from "@mui/x-data-grid/models/gridStateCommunity";
 import React from "react";
@@ -10,11 +11,15 @@ import { formatUUIDShort } from "../../utils/formatting";
 const COLUMNS: GridColDef[] = [
   {
     field: 'id', headerName: 'Dataset ID', flex: 0.5,
-    valueFormatter: (params) => formatUUIDShort(params.value)
+    valueFormatter: (params) => formatUUIDShort(params.value),
+    filterable: false,
   },
-  { field: 'name', headerName: 'Dataset Name', flex: 0.5 },
+  { field: 'name', headerName: 'Dataset Name', flex: 0.5,
+    filterable: false,
+  },
   { field: 'terms', headerName: 'Terms', flex: 2.0,
     valueGetter: (params) => params.value.map(t => t['term']).join('. '),
+    sortable: false,
     renderCell: (params: GridRenderCellParams<any, any>) => {
       let triples = params.value.split(". ").filter(i => i !== "");
       let items = triples.map((v, i) => {
@@ -33,7 +38,14 @@ const COLUMNS: GridColDef[] = [
   },
 ]
 
+const INITIAL_FILTER: GridFilterModel = {
+  items: [ { columnField: 'terms', operatorValue: 'contains', value: '.' } ],
+}
+
 const INITIAL_STATE: GridInitialStateCommunity = {
+  filter: {
+    filterModel: INITIAL_FILTER
+  },
   columns: {
     columnVisibilityModel: {
       database: true,
@@ -43,7 +55,7 @@ const INITIAL_STATE: GridInitialStateCommunity = {
 }
 
 const INITIAL_SORTING: GridSortModel = [
-  { field: 'dataset_id', sort: 'desc' }
+  { field: 'terms', sort: 'desc' }
 ]
 
 
@@ -54,7 +66,9 @@ export const DatadiscoveryGrid = (props: {}) => {
         endpoint="/datadiscovery/"
         columns={COLUMNS}
         initialState={INITIAL_STATE}
+        initialFilter={INITIAL_FILTER}
         initialSorting={INITIAL_SORTING}
+        showQuickFilter={false}
         actions={(params, actions) => []}
       />
     </Box>

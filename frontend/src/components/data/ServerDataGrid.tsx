@@ -53,10 +53,11 @@ export const ServerDataGrid = <T, > (props: {
   initialState: GridInitialStateCommunity,
   initialSorting: GridSortModel,
   initialFilter?: GridFilterModel,
+  showQuickFilter?: boolean,
   actions?: (params: GridRowParams, actions: React.ReactNode[]) => React.ReactNode[],
 } & Partial<React.ComponentProps<typeof DataGrid>>) => {
   const {
-    endpoint, columns, initialState, initialSorting, initialFilter, actions, ...rest
+    endpoint, columns, initialState, initialSorting, initialFilter, actions, showQuickFilter, ...rest
   } = props;
 
   const [ filterModel, setFilterModel ] = React.useState<GridFilterModel>(initialFilter ?? { items: [] });
@@ -171,7 +172,7 @@ export const ServerDataGrid = <T, > (props: {
         initialState={initialState}
         componentsProps={{
           toolbar: {
-            showQuickFilter: true,
+            showQuickFilter: showQuickFilter ?? true,
             quickFilterProps: { debounceMs: 500 },
           },
         }}
