@@ -78,6 +78,7 @@ export const LODCGrid = (props: {}) => {
         columns={columns}
         getRowHeight={() => 'auto'}
         getEstimatedRowHeight={() => 100}
+        filterMode="client"
         initialState={{
           filter: {
             filterModel: {

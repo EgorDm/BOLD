@@ -59,7 +59,7 @@ export const ReportsGrid = (props: {}) => {
 
   return (
     <Box sx={{ width: '100%', height: 600 }}>
-      <ServerDataGrid
+      <ServerDataGrid<Report>
         endpoint="/reports/"
         columns={COLUMNS}
         initialState={INITIAL_STATE}
